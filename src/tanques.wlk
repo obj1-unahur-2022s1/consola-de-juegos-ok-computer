@@ -1,3 +1,5 @@
+import wollok.game.*
+
 //moverse
 //disparar
 //recibir disparo
@@ -6,7 +8,7 @@
 class Tanque {
 	var property salud = 1
 	var property image
-	var property position
+	var property position = game.origin()
 	
 	method recibirDisparo() { salud = 0}
 }

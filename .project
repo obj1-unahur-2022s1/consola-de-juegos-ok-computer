@@ -32,4 +32,16 @@
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 		<nature>org.uqbar.project.wollok.wollokNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>assets/fondo.png</name>
+			<type>1</type>
+			<location>C:/Users/usuario/Documents/UNAHUR/fondo.png</location>
+		</link>
+		<link>
+			<name>assets/ladrillo.png</name>
+			<type>1</type>
+			<location>C:/Users/usuario/Documents/UNAHUR/ladrillo.png</location>
+		</link>
+	</linkedResources>
 </projectDescription>
