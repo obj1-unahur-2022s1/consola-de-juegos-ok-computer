@@ -5,7 +5,16 @@ program juego {
 	game.title("Battle City")
 	game.height(13)
 	game.width(13)
-  	game.ground("fondo.png")
+	game.ground("fondo.png")
 	nivel.cargarEscenario()
 	game.start()
+	/* 
+	method pantallaPrincipal() {
+		game.addVisual("pantallaPrincipal.png")
+	keyboard.enter().onPressDo({
+		game.removeVisual("pantallaPrincipal.png")
+		
+		})
+	}
+	*/
 }

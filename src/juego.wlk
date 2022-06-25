@@ -6,7 +6,10 @@ class Juego {
 	var property color 
 	
 	method iniciar(){
-        game.addVisual(object{method position()= game.center() method text() = "Juego "+color + " - <q> para salir"})		
+        game.addVisual(object{
+        	method position()= game.center() 
+        	method text() = "Juego "+color + " - <q> para salir"
+        })		
 	}
 	
 	method terminar(){
