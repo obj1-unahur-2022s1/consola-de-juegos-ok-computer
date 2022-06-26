@@ -1,4 +1,5 @@
 import wollok.game.*
+import niveles.*
 
 //moverse
 //disparar
@@ -10,7 +11,7 @@ class Tanque {
 	var property image = ""
 	var property position = 0
 	
-	method recibirDisparo() { salud = 0}
+	method recibirDisparo() { salud = 0 }
 	
 }
 
@@ -33,10 +34,8 @@ class TanqueEnemigoResistente inherits Tanque {
 	override method image() = "enemigo3.png"
 	override method position() = game.at(12,12)
 	override method salud() = 3
-	
-	override method recibirDisparo(){ 0.max(salud - 1) } 
 }
 
-object estrella {
+object aguila {
 	var property salud = 1
 }
