@@ -5,25 +5,20 @@ object nivel {
 	const posLadrillos = []
 	var posArbustos = []
 	var posLadrilloGris = []
-	const tanqueJugador = new TanqueJugador()
-	const tanqueEnemigo = new TanqueEnemigo()
-	const tanqueEnemigoRapido = new TanqueEnemigoRapido()
-	const tanqueEnemigoResistente = new TanqueEnemigoResistente()
+	
+	const tanques = [tanqueEnemigo,tanqueEnemigoRapido,tanqueEnemigoResistente]
 	
 	method cargarEscenario() {
 		
-		game.clear()
-		game.boardGround("fondo.png")
-		game.title("Battle City")
-		game.width(13)
-		game.height(13)
+		game.removeVisual(pantPrincipal)
 		self.dibujarEscenario()
-		game.addVisual(objetoAProteger)
-		game.addVisual(tanqueJugador)
+		game.addVisual(aguila)
 		game.addVisual(tanqueEnemigo)
 		game.addVisual(tanqueEnemigoRapido)
 		game.addVisual(tanqueEnemigoResistente)
-		game.start()
+		game.addVisualCharacter(tanqueJugador)
+		game.onTick(1000, "Mover tanques enemigos", { self.moverTanquesEnemigos() })
+		
 	}
 	
 	method dibujarEscenario() {
@@ -56,6 +51,18 @@ object nivel {
 		game.addVisual(imagen)
 		return imagen
 	}
+	
+	method alChocar() {
+		tanques.forEach({t =>
+			game.whenCollideDo(t, {obj =>
+				
+			})
+		})
+	}
+	
+	method moverTanquesEnemigos() {
+		tanques.forEach { t => t.mover() }
+	}
 }
 
 class Ladrillo {
@@ -84,33 +91,7 @@ class Canionazo {
 	const property image = "canionazo.png"
 }
 
-object objetoAProteger {
-	const property position = new Position(x=6,y=0)
-	const property image = "proteger.png"
+object pantPrincipal {
+	const property position = game.at(1,2)
+	const property image = "pantPrincipal.png"
 }
-
-
-class Direccion {
-	method siguiente(position)
-}
-
-object izquierda inherits Direccion { 
-	override method siguiente(position) = position.left(1) 
-	method opuesto() = derecha
-}
-
-object derecha inherits Direccion { 
-	override method siguiente(position) = position.right(1) 
-	method opuesto() = izquierda
-}
-
-object abajo inherits Direccion { 
-	override method siguiente(position) = position.down(1) 
-	method opuesto() = arriba
-}
-
-object arriba inherits Direccion { 
-	override method siguiente(position) = position.up(1) 
-	method opuesto() = abajo
-}
-

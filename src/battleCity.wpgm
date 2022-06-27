@@ -6,7 +6,9 @@ program juego {
 	game.title("Battle City")
 	game.height(13)
 	game.width(13)
-	game.boardGround("pantPrincipal.png")
+	game.ground("fondo.png")
+	game.addVisual(pantPrincipal)
 	keyboard.enter().onPressDo({nivel.cargarEscenario()})
+	
 	game.start()
 }
