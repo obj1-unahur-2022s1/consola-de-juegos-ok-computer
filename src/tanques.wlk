@@ -14,33 +14,59 @@ object tanqueJugador {
 
 	method image() = direccion.toString() + "Jugador.png"
 	
-	method moverse(unaDireccion) {
-		if(not self.hayUnObjeto(unaDireccion)) {
-			position = unaDireccion.mover(position)
-			direccion = unaDireccion
+	method moverseArriba() {
+		if(position.y() != game.height() - 1 and (not self.hayUnObjeto(arriba))) {
+			direccion = arriba
+			position = direccion.mover(position)
 		}
 	}
 	
-	method recibirDisparo() { game.removeVisual(self)}
+	method moverseAbajo() {
+		if(position.y() != 0 and (not self.hayUnObjeto(abajo))) {
+			direccion = abajo
+			position = direccion.mover(position)
+		}
+	}
+	
+	method moverseDerecha() {
+		if(position.x() != game.width() - 1 and (not self.hayUnObjeto(derecha))) {
+			direccion = derecha
+			position = direccion.mover(position)
+		}
+	}
+	
+	method moverseIzquierda() {
+		if(position.x() != 0 and (not self.hayUnObjeto(izquierda))) {
+			direccion = izquierda
+			position = direccion.mover(position)
+		}
+	}
+	
+	method recibirDisparo() { 
+		if (canionazoJugador.position() == self.position())
+			self.destruirse()
+			game.removeVisual(canionazoJugador)
+	}
 	
 	method disparar() {
-		var disparo = new Canionazo()
 		
-		game.addVisualIn(disparo,direccion.mover(position))
+		game.addVisual(canionazoJugador)
+		game.onTick(300, "Disparo canionazo tanque jugador", { canionazoJugador.avanzar() })
 	}
 	
 	method hayUnObjeto(unaDireccion) {
 		const objetoAca = game.getObjectsIn(unaDireccion.mover(position))
 		return not objetoAca.isEmpty()
 	}
+	
+	method destruirse() {
+		game.removeVisual(self)
+	}
 }
 
 class TanquesEnemigos {
 	var property position
-	var property image 
-	var direccion = abajo
-	
-	method recibirDisparo() { game.removeVisual(self) }
+	var property direccion = abajo
 	
 	method direccionesPosibles() {
 		const direcciones = [arriba,abajo,derecha,izquierda]
@@ -64,28 +90,62 @@ class TanquesEnemigos {
 		return direcciones
 	}
 	
-	method mover() {
+	method moverse() {
 		direccion = self.direccionesPosibles().anyOne()
 		position = direccion.mover(position)
 	}
 	
 	method hayUnObjeto(unaDireccion) {
-		const objetoAca = game.getObjectsIn(unaDireccion.mover(position))
+		const objetoAca = game.getObjectsIn(unaDireccion.mover(self.position()))
 		return not objetoAca.isEmpty()
 	}
+	
+	method disparar() {
+		
+		game.addVisual(canionazoJugador)
+		game.onTick(500, "Disparo canionazo tanque jugador", { canionazoJugador.avanzar() })
+	}
+	
+	method recibirDisparo() { 
+		if (canionazoJugador.position() == self.position()) {
+			self.destruirse()
+			game.removeVisual(canionazoJugador)
+		}
+	}
+	
+	method destruirse() {
+		game.removeVisual(self)
+	}
+	
+	method image()
 }
 
-class TanqueEnemigoResistente inherits TanquesEnemigos{
+class TanqueEnemigoComun inherits TanquesEnemigos{
+	
+	override method image() = direccion.toString() + "Enemigo1.png"
+	
+	
+}
+
+class TanqueEnemigoRapido inherits TanquesEnemigos {
+	
+	override method image() = direccion.toString() + "Enemigo2.png"
+	
+}
+
+class TanqueEnemigoResistente inherits TanquesEnemigos {
+
 	var property salud = 3
+	
+	override method image() = direccion.toString() + "Enemigo3.png"
 	
 	override method recibirDisparo() { 
 		salud = 0.max(salud - 1)
-		
+
 		if(salud == 0) {
 			game.removeVisual(self)
 		}
 	}
-	
 }
 
 object aguila {

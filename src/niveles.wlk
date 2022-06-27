@@ -6,9 +6,9 @@ object nivel {
 	const posLadrillos = []
 	var posArbustos = []
 	var posLadrilloGris = []
-	const tanqueEnemigoComun = new TanquesEnemigos(position = game.at(6,12), image = "abajoEnemigo1.png")
-	const tanqueEnemigoRapido = new TanquesEnemigos(position = game.at(0,12), image = "abajoEnemigo2.png")
-	const tanqueEnemigoResistente = new TanqueEnemigoResistente(position = game.at(12,12), image = "abajoEnemigo3.png")
+	const tanqueEnemigoComun = new TanqueEnemigoComun(position = game.at(6,12))
+	const tanqueEnemigoRapido = new TanqueEnemigoRapido(position = game.at(0,12))
+	const tanqueEnemigoResistente = new TanqueEnemigoResistente(position = game.at(12,12))
 	const tanques = [tanqueEnemigoComun,tanqueEnemigoResistente]
 	
 	method cargarEscenario() {
@@ -20,13 +20,13 @@ object nivel {
 		game.addVisual(tanqueEnemigoRapido)
 		game.addVisual(tanqueEnemigoResistente)
 		game.addVisual(tanqueJugador)
-		keyboard.up().onPressDo({tanqueJugador.moverse(arriba)})
-		keyboard.right().onPressDo({tanqueJugador.moverse(derecha)})
-		keyboard.left().onPressDo({tanqueJugador.moverse(izquierda)})
-		keyboard.down().onPressDo({tanqueJugador.moverse(abajo)})
+		keyboard.up().onPressDo({tanqueJugador.moverseArriba()})
+		keyboard.right().onPressDo({tanqueJugador.moverseDerecha()})
+		keyboard.left().onPressDo({tanqueJugador.moverseIzquierda()})
+		keyboard.down().onPressDo({tanqueJugador.moverseAbajo()})
 		keyboard.s().onPressDo({tanqueJugador.disparar()})
 		game.onTick(1000, "Mover tanques enemigos", { self.moverTanquesEnemigos() })
-		game.onTick(300, "Mover tanque enemigo rapido", { self.moverTanqueEnemigoRapido() })
+		game.onTick(500, "Mover tanque enemigo rapido", { self.moverTanqueEnemigoRapido() })
 		
 	}
 	
@@ -61,6 +61,26 @@ object nivel {
 		return imagen
 	}
 	
+	method ganaste(){
+		game.clear()
+		game.width(13)
+		game.height(13)
+		game.addVisual(pantGanador)
+		keyboard.space().onPressDo{self.cargarEscenario()}
+		keyboard.x().onPressDo{game.stop()}
+	}
+	
+	method gameOver(){
+		game.clear()
+		game.title("Battle City")
+		game.width(13)
+		game.height(13)
+        game.addVisual(gameOver)
+		keyboard.space().onPressDo{self.cargarEscenario()}
+		keyboard.x().onPressDo{game.stop()}
+		
+	}
+	
 	/*method alChocar() {
 		tanques.forEach({t =>
 			game.whenCollideDo(t, {
@@ -70,11 +90,11 @@ object nivel {
 	}*/
 	
 	method moverTanquesEnemigos() {
-		tanques.forEach { t => t.mover() }
+		tanques.forEach { t => t.moverse() }
 	}
 	
 	method moverTanqueEnemigoRapido() {
-		tanqueEnemigoRapido.mover()
+		tanqueEnemigoRapido.moverse()
 	}
 }
 
@@ -100,19 +120,28 @@ class LadrilloGris {
 	
 }
 
-class Canionazo {
-	var position = tanqueJugador.position()
-	const direccion = tanqueJugador.direccion()
-	const property image = "canionazo.png"
+object canionazoJugador {
+	var property position = tanqueJugador.position()
+	const property direccion = tanqueJugador.direccion()
+	
+	method image() = "canionazo.png"
 	
 	method avanzar() {
 		position = direccion.mover(position)
 	}
-	
-	method position() = position
 }
 
 object pantPrincipal {
-	const property position = game.at(1,2)
-	const property image = "pantPrincipal.png"
+	const property position = game.origin()
+	const property image = "pantPrincipal2.png"
+}
+
+object gameOver {
+	const property position = game.origin()
+	const property image = "gameOver.png"
+}
+
+object pantGanador {
+	const property position = game.origin()
+	const property image = "pantGanador.png"
 }
