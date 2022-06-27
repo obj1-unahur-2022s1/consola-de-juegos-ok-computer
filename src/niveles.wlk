@@ -5,19 +5,22 @@ object nivel {
 	const posLadrillos = []
 	var posArbustos = []
 	var posLadrilloGris = []
-	
-	const tanques = [tanqueEnemigo,tanqueEnemigoRapido,tanqueEnemigoResistente]
+	const tanqueEnemigoComun = new TanquesEnemigos(position = game.at(6,12), image = "enemigo1.png")
+	const tanqueEnemigoRapido = new TanquesEnemigos(position = game.at(0,12), image = "enemigo2.png")
+	const tanqueEnemigoResistente = new TanqueEnemigoResistente(position = game.at(12,12), image = "enemigo3.png")
+	const tanques = [tanqueEnemigoComun,tanqueEnemigoResistente]
 	
 	method cargarEscenario() {
 		
 		game.removeVisual(pantPrincipal)
 		self.dibujarEscenario()
 		game.addVisual(aguila)
-		game.addVisual(tanqueEnemigo)
+		game.addVisual(tanqueEnemigoComun)
 		game.addVisual(tanqueEnemigoRapido)
 		game.addVisual(tanqueEnemigoResistente)
 		game.addVisualCharacter(tanqueJugador)
 		game.onTick(1000, "Mover tanques enemigos", { self.moverTanquesEnemigos() })
+		game.onTick(300, "Mover tanque enemigo rapido", { self.moverTanqueEnemigoRapido() })
 		
 	}
 	
@@ -54,7 +57,7 @@ object nivel {
 	
 	method alChocar() {
 		tanques.forEach({t =>
-			game.whenCollideDo(t, {obj =>
+			game.whenCollideDo(t, {
 				
 			})
 		})
@@ -62,6 +65,10 @@ object nivel {
 	
 	method moverTanquesEnemigos() {
 		tanques.forEach { t => t.mover() }
+	}
+	
+	method moverTanqueEnemigoRapido() {
+		tanqueEnemigoRapido.mover()
 	}
 }
 
