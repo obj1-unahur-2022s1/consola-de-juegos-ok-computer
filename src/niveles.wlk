@@ -1,13 +1,14 @@
 import wollok.game.*
 import tanques.*
+import direcciones.*
 
 object nivel {
 	const posLadrillos = []
 	var posArbustos = []
 	var posLadrilloGris = []
-	const tanqueEnemigoComun = new TanquesEnemigos(position = game.at(6,12), image = "enemigo1.png")
-	const tanqueEnemigoRapido = new TanquesEnemigos(position = game.at(0,12), image = "enemigo2.png")
-	const tanqueEnemigoResistente = new TanqueEnemigoResistente(position = game.at(12,12), image = "enemigo3.png")
+	const tanqueEnemigoComun = new TanquesEnemigos(position = game.at(6,12), image = "abajoEnemigo1.png")
+	const tanqueEnemigoRapido = new TanquesEnemigos(position = game.at(0,12), image = "abajoEnemigo2.png")
+	const tanqueEnemigoResistente = new TanqueEnemigoResistente(position = game.at(12,12), image = "abajoEnemigo3.png")
 	const tanques = [tanqueEnemigoComun,tanqueEnemigoResistente]
 	
 	method cargarEscenario() {
@@ -18,7 +19,12 @@ object nivel {
 		game.addVisual(tanqueEnemigoComun)
 		game.addVisual(tanqueEnemigoRapido)
 		game.addVisual(tanqueEnemigoResistente)
-		game.addVisualCharacter(tanqueJugador)
+		game.addVisual(tanqueJugador)
+		keyboard.up().onPressDo({tanqueJugador.moverse(arriba)})
+		keyboard.right().onPressDo({tanqueJugador.moverse(derecha)})
+		keyboard.left().onPressDo({tanqueJugador.moverse(izquierda)})
+		keyboard.down().onPressDo({tanqueJugador.moverse(abajo)})
+		keyboard.s().onPressDo({tanqueJugador.disparar()})
 		game.onTick(1000, "Mover tanques enemigos", { self.moverTanquesEnemigos() })
 		game.onTick(300, "Mover tanque enemigo rapido", { self.moverTanqueEnemigoRapido() })
 		
@@ -55,13 +61,13 @@ object nivel {
 		return imagen
 	}
 	
-	method alChocar() {
+	/*method alChocar() {
 		tanques.forEach({t =>
 			game.whenCollideDo(t, {
 				
 			})
 		})
-	}
+	}*/
 	
 	method moverTanquesEnemigos() {
 		tanques.forEach { t => t.mover() }
@@ -91,11 +97,19 @@ class Agua {
 class LadrilloGris {
 	const property position 
 	const property image = "ladrilloGris.png"
+	
 }
 
 class Canionazo {
-	const property position
+	var position = tanqueJugador.position()
+	const direccion = tanqueJugador.direccion()
 	const property image = "canionazo.png"
+	
+	method avanzar() {
+		position = direccion.mover(position)
+	}
+	
+	method position() = position
 }
 
 object pantPrincipal {
