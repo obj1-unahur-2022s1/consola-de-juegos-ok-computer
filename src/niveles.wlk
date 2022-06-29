@@ -128,7 +128,13 @@ object canionazoJugador {
 	
 	method avanzar() {
 		position = direccion.mover(position)
+		if(position.y() > game.height() - 1) {
+			game.removeTickEvent("Disparo canionazo tanque jugador")
+			game.removeVisual(self)
+		}
 	}
+	
+	
 }
 
 object pantPrincipal {

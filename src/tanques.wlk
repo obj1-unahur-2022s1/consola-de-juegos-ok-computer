@@ -51,6 +51,7 @@ object tanqueJugador {
 	method disparar() {
 		
 		game.addVisual(canionazoJugador)
+		canionazoJugador.position(self.position())
 		game.onTick(300, "Disparo canionazo tanque jugador", { canionazoJugador.avanzar() })
 	}
 	
