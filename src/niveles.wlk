@@ -25,9 +25,11 @@ object nivel {
 		keyboard.left().onPressDo({tanqueJugador.moverseIzquierda()})
 		keyboard.down().onPressDo({tanqueJugador.moverseAbajo()})
 		keyboard.s().onPressDo({tanqueJugador.disparar()})
-		game.onTick(1000, "Mover tanques enemigos", { self.moverTanquesEnemigos() })
-		game.onTick(500, "Mover tanque enemigo rapido", { self.moverTanqueEnemigoRapido() })
-		
+		game.onTick(700, "Mover tanques enemigos", { self.moverTanquesEnemigos() })
+		game.onTick(300, "Mover tanque enemigo rapido", { self.moverTanqueEnemigoRapido() })
+		self.canionazoChocandoContra(tanqueEnemigoComun)
+		self.canionazoChocandoContra(tanqueEnemigoRapido)
+		self.canionazoChocandoContra(tanqueEnemigoResistente)
 	}
 	
 	method dibujarEscenario() {
@@ -96,27 +98,47 @@ object nivel {
 	method moverTanqueEnemigoRapido() {
 		tanqueEnemigoRapido.moverse()
 	}
+	
+	method canionazoChocandoContra(unTanqueEnemigo){
+		game.onCollideDo(unTanqueEnemigo,{canionazoJugador =>
+			unTanqueEnemigo.destruirse()
+			game.removeTickEvent("Disparo canionazo tanque jugador")
+			game.removeVisual(canionazoJugador)
+		})
+	}
 }
 
 class Ladrillo {
 	const property position 
 	const property image = "ladrillo.png"
 	
+	method destruirse() {
+		game.removeVisual(self)
+	}
+	
 }
 
 class Arbusto {
 	const property position 
 	const property image = "arbusto.png"
+	
+	method destruirse() {
+		game.removeVisual(self)
+	}
 }
 
 class Agua {
 	const property position 
 	const property image = "agua.png"
+	
+	method destruirse() {}
 }
 
 class LadrilloGris {
 	const property position 
 	const property image = "ladrilloGris.png"
+	
+	method destruirse() {}
 	
 }
 

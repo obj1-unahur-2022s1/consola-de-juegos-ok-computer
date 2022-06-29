@@ -41,18 +41,18 @@ object tanqueJugador {
 			position = direccion.mover(position)
 		}
 	}
-	
+	/* 
 	method recibirDisparo() { 
 		if (canionazoJugador.position() == self.position())
 			self.destruirse()
 			game.removeVisual(canionazoJugador)
 	}
-	
+	*/
 	method disparar() {
 		
 		game.addVisual(canionazoJugador)
 		canionazoJugador.position(self.position())
-		game.onTick(300, "Disparo canionazo tanque jugador", { canionazoJugador.avanzar() })
+		game.onTick(100, "Disparo canionazo tanque jugador", { canionazoJugador.avanzar() })
 	}
 	
 	method hayUnObjeto(unaDireccion) {
@@ -106,14 +106,14 @@ class TanquesEnemigos {
 		game.addVisual(canionazoJugador)
 		game.onTick(500, "Disparo canionazo tanque jugador", { canionazoJugador.avanzar() })
 	}
-	
+	/* 
 	method recibirDisparo() { 
 		if (canionazoJugador.position() == self.position()) {
 			self.destruirse()
 			game.removeVisual(canionazoJugador)
 		}
 	}
-	
+	*/
 	method destruirse() {
 		game.removeVisual(self)
 	}
@@ -140,7 +140,7 @@ class TanqueEnemigoResistente inherits TanquesEnemigos {
 	
 	override method image() = direccion.toString() + "Enemigo3.png"
 	
-	override method recibirDisparo() { 
+	override method destruirse() { 
 		salud = 0.max(salud - 1)
 
 		if(salud == 0) {
@@ -153,5 +153,5 @@ object aguila {
 	const property position = game.at(6,0)
 	const property image = "proteger.png"
 	
-	method recibirDisparo() { game.removeVisual(self) }
+	method destruirse() { game.removeVisual(self) }
 }
