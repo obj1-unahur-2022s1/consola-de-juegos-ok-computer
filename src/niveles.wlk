@@ -11,6 +11,16 @@ object nivel {
 	const tanqueEnemigoResistente = new TanqueEnemigoResistente(position = game.at(12,12))
 	const tanques = [tanqueEnemigoComun,tanqueEnemigoResistente]
 	
+	method iniciar() {
+		game.clear()
+		game.title("Battle City")
+		game.height(13)
+		game.width(13)
+		game.ground("fondo.png")
+		game.addVisual(pantPrincipal)
+		keyboard.enter().onPressDo({self.cargarEscenario()})
+	
+	}
 	method cargarEscenario() {
 		
 		game.removeVisual(pantPrincipal)
@@ -161,7 +171,7 @@ object canionazoJugador {
 
 object pantPrincipal {
 	const property position = game.origin()
-	const property image = "pantPrincipal2.png"
+	const property image = "pantPrincipal.png"
 }
 
 object gameOver {
