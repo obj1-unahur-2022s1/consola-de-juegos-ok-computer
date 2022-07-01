@@ -1,6 +1,7 @@
 import wollok.game.*
 import tanques.*
 import direcciones.*
+import juego.*
 
 object nivel {
 	const posLadrillos = []
@@ -11,6 +12,7 @@ object nivel {
 	const tanqueEnemigoResistente = new TanqueEnemigoResistente(position = game.at(12,12))
 	const tanques = [tanqueEnemigoComun,tanqueEnemigoResistente]
 	
+	
 	method iniciar() {
 		game.clear()
 		game.title("Battle City")
@@ -18,7 +20,7 @@ object nivel {
 		game.width(13)
 		game.ground("fondo.png")
 		game.addVisual(pantPrincipal)
-		game.schedule( 100, { => soundPantPrincipal.play()} )
+		//game.schedule( 100, { => soundPantPrincipal.play()} )
 		keyboard.enter().onPressDo({self.cargarEscenario()})
 	
 	}
@@ -92,10 +94,10 @@ object nivel {
 	}
 	
 	method canionazoChocandoContra(unTanqueEnemigo){
-		game.onCollideDo(unTanqueEnemigo,{canionazoJugador =>
+		game.onCollideDo(unTanqueEnemigo,{canionazo =>
 			unTanqueEnemigo.destruirse()
 			game.removeTickEvent("Disparo canionazo tanque jugador")
-			game.removeVisual(canionazoJugador)
+			game.removeVisual(canionazo)
 		})
 	}
 	
@@ -121,7 +123,7 @@ object nivel {
 		
 	}
 }
-/// VISUALES ESCENARIO
+/// VISUALES ESCENARIO ///
 class Ladrillo {
 	const property position 
 	const property image = "ladrillo.png"
@@ -141,38 +143,50 @@ class Arbusto {
 	}
 }
 
-class Agua {
-	const property position 
-	const property image = "agua.png"
-	
-	method destruirse() {}
-}
-
 class LadrilloGris {
 	const property position 
 	const property image = "ladrilloGris.png"
 	
 	method destruirse() {}
 	
+	
 }
 ///
-object canionazoJugador {
+object canionazo {
 	var property position = tanqueJugador.position()
-	const property direccion = tanqueJugador.direccion()
+	var property direccion = tanqueJugador.direccion()
 	
 	method image() = "canionazo.png"
 	
 	method avanzar() {
+		
 		position = direccion.mover(position)
+		
 		if(position.y() > game.height() - 1) {
 			game.removeTickEvent("Disparo canionazo tanque jugador")
 			game.removeVisual(self)
 		}
+		
+		if(position.y() < 0) {
+			game.removeTickEvent("Disparo canionazo tanque jugador")
+			game.removeVisual(self)
+		}
+		
+		if(position.x() > game.width() - 1) {
+			game.removeTickEvent("Disparo canionazo tanque jugador")
+			game.removeVisual(self)
+		}
+		
+		if(position.x() < 0) {
+			game.removeTickEvent("Disparo canionazo tanque jugador")
+			game.removeVisual(self)
+		}
 	}
-	
-	
+
 }
-/// MÚSICA
+
+
+/// MÚSICA ///
 
 const soundPantPrincipal = game.sound("sonidoPantPrincipal.mp3")
 const soundGanaste = game.sound("winning.mp3")
@@ -183,6 +197,7 @@ const efectoDisparo = game.sound("disparotanqueJugador.mp3")
 const efectoMuerteEnemigo = game.sound("muerteTanqueEnemigo.mp3")
 const efectoMuerteJugador = game.sound("tanqueJugadorMuere.mp3")
 const efectoMovimientoJugador = game.sound("tanqueJugadorMovimiento.mp3")
+
 
 object pantPrincipal {
 	const property position = game.origin()

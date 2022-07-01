@@ -50,9 +50,12 @@ object tanqueJugador {
 	*/
 	method disparar() {
 		
-		game.addVisual(canionazoJugador)
-		canionazoJugador.position(self.position())
-		game.onTick(100, "Disparo canionazo tanque jugador", { canionazoJugador.avanzar() })
+		game.addVisual(canionazo)
+		canionazo.position(self.position())
+		canionazo.direccion(self.direccion())
+		game.onTick(100, "Disparo canionazo tanque jugador", { 
+			canionazo.avanzar()
+		})
 	}
 	
 	method hayUnObjeto(unaDireccion) {
@@ -103,9 +106,12 @@ class TanquesEnemigos {
 	
 	method disparar() {
 		
-		game.addVisual(canionazoJugador)
-		game.onTick(500, "Disparo canionazo tanque jugador", { canionazoJugador.avanzar() })
+		game.addVisual(canionazo)
+		canionazo.position(self.position())
+		canionazo.direccion(self.direccion())
+		game.onTick(500, "Disparo canionazo tanque enemigo", { canionazo.avanzar() })
 	}
+	
 	/* 
 	method recibirDisparo() { 
 		if (canionazoJugador.position() == self.position()) {
