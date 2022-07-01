@@ -3,12 +3,6 @@ import niveles.*
 import tanques.*
 
 program juego {
-	game.title("Battle City")
-	game.height(13)
-	game.width(13)
-	game.ground("fondo.png")
-	game.addVisual(pantPrincipal)
-	keyboard.enter().onPressDo({nivel.cargarEscenario()})
-	
+	nivel.iniciar()
 	game.start()
 }

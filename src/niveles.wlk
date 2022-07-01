@@ -18,6 +18,7 @@ object nivel {
 		game.width(13)
 		game.ground("fondo.png")
 		game.addVisual(pantPrincipal)
+		game.schedule( 100, { => soundPantPrincipal.play()} )
 		keyboard.enter().onPressDo({self.cargarEscenario()})
 	
 	}
@@ -35,6 +36,7 @@ object nivel {
 		keyboard.left().onPressDo({tanqueJugador.moverseIzquierda()})
 		keyboard.down().onPressDo({tanqueJugador.moverseAbajo()})
 		keyboard.s().onPressDo({tanqueJugador.disparar()})
+		keyboard.x().onPressDo{game.stop()}
 		game.onTick(700, "Mover tanques enemigos", { self.moverTanquesEnemigos() })
 		game.onTick(300, "Mover tanque enemigo rapido", { self.moverTanqueEnemigoRapido() })
 		self.canionazoChocandoContra(tanqueEnemigoComun)
@@ -73,26 +75,6 @@ object nivel {
 		return imagen
 	}
 	
-	method ganaste(){
-		game.clear()
-		game.width(13)
-		game.height(13)
-		game.addVisual(pantGanador)
-		keyboard.space().onPressDo{self.cargarEscenario()}
-		keyboard.x().onPressDo{game.stop()}
-	}
-	
-	method gameOver(){
-		game.clear()
-		game.title("Battle City")
-		game.width(13)
-		game.height(13)
-        game.addVisual(gameOver)
-		keyboard.space().onPressDo{self.cargarEscenario()}
-		keyboard.x().onPressDo{game.stop()}
-		
-	}
-	
 	/*method alChocar() {
 		tanques.forEach({t =>
 			game.whenCollideDo(t, {
@@ -116,8 +98,30 @@ object nivel {
 			game.removeVisual(canionazoJugador)
 		})
 	}
+	
+	method ganaste(){
+		game.clear()
+		game.width(13)
+		game.height(13)
+		game.addVisual(pantGanador)
+		game.schedule( 100, { => soundGanaste.play()} )
+		keyboard.space().onPressDo{self.iniciar()}
+		keyboard.x().onPressDo{game.stop()}
+	}
+	
+	method gameOver(){
+		game.clear()
+		game.title("Battle City")
+		game.width(13)
+		game.height(13)
+        game.addVisual(gameOver)
+        game.schedule( 100, { => soundGameOver.play()} )
+		keyboard.space().onPressDo{self.iniciar()}
+		keyboard.x().onPressDo{game.stop()}
+		
+	}
 }
-
+/// VISUALES ESCENARIO
 class Ladrillo {
 	const property position 
 	const property image = "ladrillo.png"
@@ -151,7 +155,7 @@ class LadrilloGris {
 	method destruirse() {}
 	
 }
-
+///
 object canionazoJugador {
 	var property position = tanqueJugador.position()
 	const property direccion = tanqueJugador.direccion()
@@ -168,6 +172,17 @@ object canionazoJugador {
 	
 	
 }
+/// MÚSICA
+
+const soundPantPrincipal = game.sound("sonidoPantPrincipal.mp3")
+const soundGanaste = game.sound("winning.mp3")
+const soundGameOver = game.sound("gameOver.mp3")
+
+/// EFECTOS
+const efectoDisparo = game.sound("disparotanqueJugador.mp3")
+const efectoMuerteEnemigo = game.sound("muerteTanqueEnemigo.mp3")
+const efectoMuerteJugador = game.sound("tanqueJugadorMuere.mp3")
+const efectoMovimientoJugador = game.sound("tanqueJugadorMovimiento.mp3")
 
 object pantPrincipal {
 	const property position = game.origin()
