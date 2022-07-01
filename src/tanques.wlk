@@ -18,6 +18,7 @@ object tanqueJugador {
 		if(position.y() != game.height() - 1 and (not self.hayUnObjeto(arriba))) {
 			direccion = arriba
 			position = direccion.mover(position)
+			self.sonidoPorMovimiento()
 		}
 	}
 	
@@ -25,6 +26,7 @@ object tanqueJugador {
 		if(position.y() != 0 and (not self.hayUnObjeto(abajo))) {
 			direccion = abajo
 			position = direccion.mover(position)
+			self.sonidoPorMovimiento()
 		}
 	}
 	
@@ -32,6 +34,7 @@ object tanqueJugador {
 		if(position.x() != game.width() - 1 and (not self.hayUnObjeto(derecha))) {
 			direccion = derecha
 			position = direccion.mover(position)
+			self.sonidoPorMovimiento()
 		}
 	}
 	
@@ -39,6 +42,7 @@ object tanqueJugador {
 		if(position.x() != 0 and (not self.hayUnObjeto(izquierda))) {
 			direccion = izquierda
 			position = direccion.mover(position)
+			self.sonidoPorMovimiento()
 		}
 	}
 	/* 
@@ -53,8 +57,9 @@ object tanqueJugador {
 		game.addVisual(canionazo)
 		canionazo.position(self.position())
 		canionazo.direccion(self.direccion())
-		game.onTick(100, "Disparo canionazo tanque jugador", { 
+		game.onTick(50, "Disparo canionazo tanque jugador", { 
 			canionazo.avanzar()
+			self.sonidoDisparo()
 		})
 	}
 	
@@ -65,6 +70,26 @@ object tanqueJugador {
 	
 	method destruirse() {
 		game.removeVisual(self)
+		self.sonidoMuerte()
+		nivel.gameOver()
+	}
+	
+	method sonidoPorMovimiento(){
+		const mov = game.sound("tanqueJugadorMovimiento.mp3")
+		mov.volume(0.1)
+		mov.play()
+	}
+	
+	method sonidoDisparo() {
+		const disparo = game.sound("disparoTanqueJugador.mp3")
+		disparo.volume(0.1)
+		disparo.play()
+	}
+	
+	method sonidoMuerte() {
+		const muerte = game.sound("tanqueJugadorMuere.mp3")
+		muerte.volume(0.1)
+		muerte.play()
 	}
 }
 
@@ -105,7 +130,6 @@ class TanquesEnemigos {
 	}
 	
 	method disparar() {
-		
 		game.addVisual(canionazo)
 		canionazo.position(self.position())
 		canionazo.direccion(self.direccion())
@@ -121,23 +145,46 @@ class TanquesEnemigos {
 	}
 	*/
 	method destruirse() {
+		self.sonidoMuerteEnemigo()
 		game.removeVisual(self)
+		nivel.ganaste()
 	}
 	
 	method image()
+	
+	method sonidoMuerteEnemigo() {
+		const muerte = game.sound("muerteTanqueEnemigo.mp3")
+		muerte.volume(0.1)
+		muerte.play()
+	}
 }
 
 class TanqueEnemigoComun inherits TanquesEnemigos{
 	
 	override method image() = direccion.toString() + "Enemigo1.png"
 	
-	
+	/*override method disparar() {
+		const canionazoComun = new CanionazosEnemigos(position=self.position(),direccion=self.position())
+		
+		game.addVisual(canionazoComun)
+		canionazoComun.position(self.position())
+		canionazoComun.direccion(self.direccion())
+		game.onTick(500, "Disparo canionazo tanque enemigo", { canionazoComun.avanzar() })
+	}*/
 }
 
 class TanqueEnemigoRapido inherits TanquesEnemigos {
 	
 	override method image() = direccion.toString() + "Enemigo2.png"
 	
+	/*override method disparar() {
+		const canionazoRapido = new CanionazosEnemigos(position=self.position(),direccion=self.position())
+		
+		game.addVisual(canionazoRapido)
+		canionazoRapido.position(self.position())
+		canionazoRapido.direccion(self.direccion())
+		game.onTick(500, "Disparo canionazo tanque enemigo", { canionazoRapido.avanzar() })
+	}*/
 }
 
 class TanqueEnemigoResistente inherits TanquesEnemigos {
@@ -151,8 +198,18 @@ class TanqueEnemigoResistente inherits TanquesEnemigos {
 
 		if(salud == 0) {
 			game.removeVisual(self)
+			self.sonidoMuerteEnemigo()
 		}
 	}
+	
+	/*override method disparar() {
+		const canionazoResistente = new CanionazosEnemigos(position=self.position(),direccion=self.position())
+		
+		game.addVisual(canionazoResistente)
+		canionazoResistente.position(self.position())
+		canionazoResistente.direccion(self.direccion())
+		game.onTick(500, "Disparo canionazo tanque enemigo", { canionazoResistente.avanzar() })
+	}*/
 }
 
 object aguila {

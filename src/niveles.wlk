@@ -12,17 +12,17 @@ object nivel {
 	const tanqueEnemigoResistente = new TanqueEnemigoResistente(position = game.at(12,12))
 	const tanques = [tanqueEnemigoComun,tanqueEnemigoResistente]
 	
-	
 	method iniciar() {
+		
 		game.clear()
 		game.title("Battle City")
 		game.height(13)
 		game.width(13)
 		game.ground("fondo.png")
 		game.addVisual(pantPrincipal)
-		//game.schedule( 100, { => soundPantPrincipal.play()} )
+		game.schedule( 100, { => soundPantPrincipal.iniciar() } )
 		keyboard.enter().onPressDo({self.cargarEscenario()})
-	
+		game.start()
 	}
 	method cargarEscenario() {
 		
@@ -45,12 +45,13 @@ object nivel {
 		self.canionazoChocandoContra(tanqueEnemigoRapido)
 		self.canionazoChocandoContra(tanqueEnemigoResistente)
 	}
+		
 	
 	method dibujarEscenario() {
 		
 		(1..4).forEach({ col => self.dibujarLadrillos(col) })
 		(8..11).forEach({ col => self.dibujarLadrillos(col) })
-		posLadrillos.forEach({ p => self.cargar(new Ladrillo(position = p)) })
+		posLadrillos.forEach({ p => self.cargar(new Ladrillo(position = p, puedeDestruirse = true)) })
 		self.dibujarArbustos()
 		self.dibujarLadrillosGris()
 		
@@ -65,11 +66,11 @@ object nivel {
 	}
 
 	method dibujarArbustos() {
-		posArbustos = [new Position(x=6,y=2),new Position(x=6,y=3), new Position(x=6,y=4)].map({p => self.cargar(new Arbusto(position = p)) })
+		posArbustos = [new Position(x=6,y=2),new Position(x=6,y=3), new Position(x=6,y=4)].map({p => self.cargar(new Arbusto(position = p, puedeDestruirse = true)) })
 	}
 	
 	method dibujarLadrillosGris() {
-		posLadrilloGris = [new Position(x=1,y=6),new Position(x=6,y=6), new Position(x=11,y=6)].map({p => self.cargar(new LadrilloGris(position = p)) })
+		posLadrilloGris = [new Position(x=1,y=6),new Position(x=6,y=6), new Position(x=11,y=6)].map({p => self.cargar(new LadrilloGris(position = p, puedeDestruirse = false)) })
 	}
 	
 	method cargar(imagen) {
@@ -101,14 +102,19 @@ object nivel {
 		})
 	}
 	
+	
 	method ganaste(){
-		game.clear()
-		game.width(13)
-		game.height(13)
-		game.addVisual(pantGanador)
-		game.schedule( 100, { => soundGanaste.play()} )
-		keyboard.space().onPressDo{self.iniciar()}
-		keyboard.x().onPressDo{game.stop()}
+		if(not game.hasVisual(tanqueEnemigoComun) and 
+		   not game.hasVisual(tanqueEnemigoRapido) and 
+		   not game.hasVisual(tanqueEnemigoResistente) ) {
+			game.clear()
+			game.width(13)
+			game.height(13)
+			game.addVisual(pantGanador)
+			soundGanaste.iniciar()
+			keyboard.space().onPressDo{ self.iniciar() }
+			keyboard.x().onPressDo{game.stop()}
+		}
 	}
 	
 	method gameOver(){
@@ -117,40 +123,51 @@ object nivel {
 		game.width(13)
 		game.height(13)
         game.addVisual(gameOver)
-        game.schedule( 100, { => soundGameOver.play()} )
-		keyboard.space().onPressDo{self.iniciar()}
+        soundGameOver.iniciar()
+		keyboard.space().onPressDo{ self.iniciar() }
 		keyboard.x().onPressDo{game.stop()}
-		
 	}
 }
 /// VISUALES ESCENARIO ///
 class Ladrillo {
 	const property position 
 	const property image = "ladrillo.png"
+	const property puedeDestruirse = true
 	
 	method destruirse() {
 		game.removeVisual(self)
 	}
 	
+	method recibirDisparo(tanqueEnemigo) {
+		game.onCollideDo(tanqueEnemigo, {canionazo =>
+			self.destruirse()
+			game.removeTickEvent("Disparo canionazo tanque enemigo")
+			game.removeVisual(canionazo)
+		})
+	}
 }
 
 class Arbusto {
 	const property position 
 	const property image = "arbusto.png"
+	const property puedeDestruirse = true
 	
 	method destruirse() {
 		game.removeVisual(self)
 	}
+	
+	method puedeDestruirse() = true
 }
 
 class LadrilloGris {
 	const property position 
 	const property image = "ladrilloGris.png"
+	const property puedeDestruirse = false
 	
 	method destruirse() {}
 	
-	
 }
+
 ///
 object canionazo {
 	var property position = tanqueJugador.position()
@@ -182,22 +199,69 @@ object canionazo {
 			game.removeVisual(self)
 		}
 	}
-
 }
 
+/*class CanionazosEnemigos {
+	var property position 
+	var property direccion 
+	
+	method image() = "canionazoEnemigo.png"
+	
+	method avanzar() {
+		
+		position = direccion.mover(position)
+		
+		if(position.y() > game.height() - 1) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo")
+			game.removeVisual(self)
+		}
+		
+		if(position.y() < 0) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo")
+			game.removeVisual(self)
+		}
+		
+		if(position.x() > game.width() - 1) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo")
+			game.removeVisual(self)
+		}
+		
+		if(position.x() < 0) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo")
+			game.removeVisual(self)
+		}
+	}
+	
+}*/
 
-/// MÚSICA ///
+/// SONIDOS ///
+object soundPantPrincipal {
+	const sound = game.sound("sonidoPantPrincipal.mp3")
+	
+	method iniciar() {
+		sound.play()
+		sound.volume(0.1)
+	}
+}
 
-const soundPantPrincipal = game.sound("sonidoPantPrincipal.mp3")
-const soundGanaste = game.sound("winning.mp3")
-const soundGameOver = game.sound("gameOver.mp3")
+object soundGanaste {
+	const sound = game.sound("winning.mp3")
+	
+	method iniciar() {
+		sound.play()
+		sound.shouldLoop()
+		sound.volume(0.1)
+	}
+}
 
-/// EFECTOS
-const efectoDisparo = game.sound("disparotanqueJugador.mp3")
-const efectoMuerteEnemigo = game.sound("muerteTanqueEnemigo.mp3")
-const efectoMuerteJugador = game.sound("tanqueJugadorMuere.mp3")
-const efectoMovimientoJugador = game.sound("tanqueJugadorMovimiento.mp3")
-
+object soundGameOver {
+	const sound = game.sound("gameOver.mp3")
+	
+	method iniciar() {
+		sound.play()
+		sound.volume(0.1)
+	}
+}
 
 object pantPrincipal {
 	const property position = game.origin()
