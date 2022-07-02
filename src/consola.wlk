@@ -14,9 +14,10 @@ object consola {
 	var menu 
 	
 	method initialize(){
-		game.height(12)
-		game.width(17)
+		game.height(13)
+		game.width(13)
 		game.title("Consola de juegos")
+		game.ground("fondo.png")
 	}
 	
 	method iniciar(){

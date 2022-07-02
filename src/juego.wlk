@@ -1,6 +1,8 @@
 import wollok.game.*
 import consola.*
 import niveles.*
+import direcciones.*
+import tanques.*
 
 class Juego {
 	var property position = null
