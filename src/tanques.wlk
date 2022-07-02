@@ -167,17 +167,21 @@ class TanqueEnemigoComun inherits TanquesEnemigos{
 	override method disparar() {
 		const canionazoEnemigo = new CanionazoComun(position = self.position(), direccion=self.direccion())
 		
-		game.addVisual(canionazoEnemigo)
-		canionazoEnemigo.position(self.position())
-		canionazoEnemigo.direccion(self.direccion())
-		game.onTick(50, "Disparo canionazo tanque enemigo comun", { canionazoEnemigo.avanzar() })
+		if(game.hasVisual(self)){
+			game.addVisual(canionazoEnemigo)
+			canionazoEnemigo.position(self.position())
+			canionazoEnemigo.direccion(self.direccion())
+			game.onTick(50, "Disparo canionazo tanque enemigo comun", { canionazoEnemigo.avanzar() })
 		
-		game.onCollideDo(canionazoEnemigo, { objeto =>
-			if(objeto != self) {
-				objeto.recibirDisparoEnemigo() 
-				game.removeTickEvent("Disparo canionazo tanque enemigo comun")
-				game.removeVisual(canionazoEnemigo)}
-		} )
+			game.onCollideDo(canionazoEnemigo, { objeto =>
+				if(objeto != self) {
+					objeto.recibirDisparoEnemigo() 
+					game.removeTickEvent("Disparo canionazo tanque enemigo comun")
+					game.removeVisual(canionazoEnemigo)}
+			} )
+		}
+		
+		
 	}
 }
 
@@ -188,17 +192,21 @@ class TanqueEnemigoRapido inherits TanquesEnemigos {
 	override method disparar() {
 		const canionazoEnemigo = new CanionazoRapido(position = self.position(), direccion=self.direccion())
 		
-		game.addVisual(canionazoEnemigo)
-		canionazoEnemigo.position(self.position())
-		canionazoEnemigo.direccion(self.direccion())
-		game.onTick(50, "Disparo canionazo tanque enemigo rapido", { canionazoEnemigo.avanzar() })
+		if(game.hasVisual(self)){
+			game.addVisual(canionazoEnemigo)
+			canionazoEnemigo.position(self.position())
+			canionazoEnemigo.direccion(self.direccion())
+			game.onTick(50, "Disparo canionazo tanque enemigo rapido", { canionazoEnemigo.avanzar() })
 		
-		game.onCollideDo(canionazoEnemigo, { objeto =>
-			if(objeto != self) {
-				objeto.recibirDisparoEnemigo() 
-				game.removeTickEvent("Disparo canionazo tanque enemigo rapido")
-				game.removeVisual(canionazoEnemigo) }
-		} )
+			game.onCollideDo(canionazoEnemigo, { objeto =>
+				if(objeto != self) {
+					objeto.recibirDisparoEnemigo() 
+					game.removeTickEvent("Disparo canionazo tanque enemigo rapido")
+					game.removeVisual(canionazoEnemigo) }
+			} )
+		}
+		
+		
 	}
 }
 
@@ -220,16 +228,21 @@ class TanqueEnemigoResistente inherits TanquesEnemigos {
 	override method disparar() {
 		const canionazoEnemigo = new CanionazoResistente(position = self.position(), direccion=self.direccion())
 		
-		game.addVisual(canionazoEnemigo)
-		canionazoEnemigo.position(self.position())
-		canionazoEnemigo.direccion(self.direccion())
-		game.onTick(50, "Disparo canionazo tanque enemigo resistente", { canionazoEnemigo.avanzar() })
+		if(game.hasVisual(self)){
+			game.addVisual(canionazoEnemigo)
+			canionazoEnemigo.position(self.position())
+			canionazoEnemigo.direccion(self.direccion())
+			game.onTick(50, "Disparo canionazo tanque enemigo resistente", { canionazoEnemigo.avanzar() })
 		
-		game.onCollideDo(canionazoEnemigo, { objeto =>
-			objeto.recibirDisparoEnemigo() 
-			game.removeTickEvent("Disparo canionazo tanque enemigo resistente")
-			game.removeVisual(canionazoEnemigo)
-		} )
+			game.onCollideDo(canionazoEnemigo, { objeto =>
+				if(objeto != self){
+					objeto.recibirDisparoEnemigo() 
+					game.removeTickEvent("Disparo canionazo tanque enemigo resistente")
+					game.removeVisual(canionazoEnemigo)}
+			} )
+		}
+		
+		
 	}
 }
 /// CAÑONAZOS ///
