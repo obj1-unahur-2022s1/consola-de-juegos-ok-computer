@@ -45,13 +45,13 @@ object tanqueJugador {
 			self.sonidoPorMovimiento()
 		}
 	}
-	/* 
-	method recibirDisparo() { 
-		if (canionazoJugador.position() == self.position())
-			self.destruirse()
-			game.removeVisual(canionazoJugador)
+	 
+	method recibirDisparoEnemigo() { 
+		self.destruirse()
 	}
-	*/
+	
+	method recibirDisparo() {}
+	
 	method disparar() {
 		
 		game.addVisual(canionazo)
@@ -61,6 +61,13 @@ object tanqueJugador {
 			canionazo.avanzar()
 			self.sonidoDisparo()
 		})
+		
+		game.onCollideDo(canionazo, { objeto =>
+			if(objeto != self) {
+				objeto.recibirDisparo() 
+				game.removeTickEvent("Disparo canionazo tanque jugador")
+				game.removeVisual(canionazo)}
+		} )
 	}
 	
 	method hayUnObjeto(unaDireccion) {
@@ -70,7 +77,6 @@ object tanqueJugador {
 	
 	method destruirse() {
 		game.removeVisual(self)
-		self.sonidoMuerte()
 		nivel.gameOver()
 	}
 	
@@ -86,11 +92,13 @@ object tanqueJugador {
 		disparo.play()
 	}
 	
-	method sonidoMuerte() {
+	/*method sonidoMuerte() { 
 		const muerte = game.sound("tanqueJugadorMuere.mp3")
 		muerte.volume(0.1)
 		muerte.play()
 	}
+	/// Lo saqué porque queda mejor el sonido del game over directamente.
+	*/ 
 }
 
 class TanquesEnemigos {
@@ -129,21 +137,14 @@ class TanquesEnemigos {
 		return not objetoAca.isEmpty()
 	}
 	
-	method disparar() {
-		game.addVisual(canionazo)
-		canionazo.position(self.position())
-		canionazo.direccion(self.direccion())
-		game.onTick(500, "Disparo canionazo tanque enemigo", { canionazo.avanzar() })
+	method disparar() {}
+	
+	method recibirDisparo() { 
+		self.destruirse()
 	}
 	
-	/* 
-	method recibirDisparo() { 
-		if (canionazoJugador.position() == self.position()) {
-			self.destruirse()
-			game.removeVisual(canionazoJugador)
-		}
-	}
-	*/
+	method recibirDisparoEnemigo() {}
+	
 	method destruirse() {
 		self.sonidoMuerteEnemigo()
 		game.removeVisual(self)
@@ -163,28 +164,42 @@ class TanqueEnemigoComun inherits TanquesEnemigos{
 	
 	override method image() = direccion.toString() + "Enemigo1.png"
 	
-	/*override method disparar() {
-		const canionazoComun = new CanionazosEnemigos(position=self.position(),direccion=self.position())
+	override method disparar() {
+		const canionazoEnemigo = new CanionazoComun(position = self.position(), direccion=self.direccion())
 		
-		game.addVisual(canionazoComun)
-		canionazoComun.position(self.position())
-		canionazoComun.direccion(self.direccion())
-		game.onTick(500, "Disparo canionazo tanque enemigo", { canionazoComun.avanzar() })
-	}*/
+		game.addVisual(canionazoEnemigo)
+		canionazoEnemigo.position(self.position())
+		canionazoEnemigo.direccion(self.direccion())
+		game.onTick(50, "Disparo canionazo tanque enemigo comun", { canionazoEnemigo.avanzar() })
+		
+		game.onCollideDo(canionazoEnemigo, { objeto =>
+			if(objeto != self) {
+				objeto.recibirDisparoEnemigo() 
+				game.removeTickEvent("Disparo canionazo tanque enemigo comun")
+				game.removeVisual(canionazoEnemigo)}
+		} )
+	}
 }
 
 class TanqueEnemigoRapido inherits TanquesEnemigos {
 	
 	override method image() = direccion.toString() + "Enemigo2.png"
 	
-	/*override method disparar() {
-		const canionazoRapido = new CanionazosEnemigos(position=self.position(),direccion=self.position())
+	override method disparar() {
+		const canionazoEnemigo = new CanionazoRapido(position = self.position(), direccion=self.direccion())
 		
-		game.addVisual(canionazoRapido)
-		canionazoRapido.position(self.position())
-		canionazoRapido.direccion(self.direccion())
-		game.onTick(500, "Disparo canionazo tanque enemigo", { canionazoRapido.avanzar() })
-	}*/
+		game.addVisual(canionazoEnemigo)
+		canionazoEnemigo.position(self.position())
+		canionazoEnemigo.direccion(self.direccion())
+		game.onTick(50, "Disparo canionazo tanque enemigo rapido", { canionazoEnemigo.avanzar() })
+		
+		game.onCollideDo(canionazoEnemigo, { objeto =>
+			if(objeto != self) {
+				objeto.recibirDisparoEnemigo() 
+				game.removeTickEvent("Disparo canionazo tanque enemigo rapido")
+				game.removeVisual(canionazoEnemigo) }
+		} )
+	}
 }
 
 class TanqueEnemigoResistente inherits TanquesEnemigos {
@@ -195,26 +210,199 @@ class TanqueEnemigoResistente inherits TanquesEnemigos {
 	
 	override method destruirse() { 
 		salud = 0.max(salud - 1)
-
+		game.say(self,"me queda " + salud + " de vida")
 		if(salud == 0) {
 			game.removeVisual(self)
 			self.sonidoMuerteEnemigo()
 		}
 	}
 	
-	/*override method disparar() {
-		const canionazoResistente = new CanionazosEnemigos(position=self.position(),direccion=self.position())
+	override method disparar() {
+		const canionazoEnemigo = new CanionazoResistente(position = self.position(), direccion=self.direccion())
 		
-		game.addVisual(canionazoResistente)
-		canionazoResistente.position(self.position())
-		canionazoResistente.direccion(self.direccion())
-		game.onTick(500, "Disparo canionazo tanque enemigo", { canionazoResistente.avanzar() })
-	}*/
+		game.addVisual(canionazoEnemigo)
+		canionazoEnemigo.position(self.position())
+		canionazoEnemigo.direccion(self.direccion())
+		game.onTick(50, "Disparo canionazo tanque enemigo resistente", { canionazoEnemigo.avanzar() })
+		
+		game.onCollideDo(canionazoEnemigo, { objeto =>
+			objeto.recibirDisparoEnemigo() 
+			game.removeTickEvent("Disparo canionazo tanque enemigo resistente")
+			game.removeVisual(canionazoEnemigo)
+		} )
+	}
+}
+/// CAÑONAZOS ///
+object canionazo {
+	var property position = tanqueJugador.position()
+	var property direccion = tanqueJugador.direccion()
+	
+	method image() = "canionazo.png"
+	
+	method avanzar() {
+		
+		position = direccion.mover(position)
+		
+		if(position.y() > game.height() - 1) {
+			game.removeTickEvent("Disparo canionazo tanque jugador")
+			game.removeVisual(self)
+		}
+		
+		if(position.y() < 0) {
+			game.removeTickEvent("Disparo canionazo tanque jugador")
+			game.removeVisual(self)
+		}
+		
+		if(position.x() > game.width() - 1) {
+			game.removeTickEvent("Disparo canionazo tanque jugador")
+			game.removeVisual(self)
+		}
+		
+		if(position.x() < 0) {
+			game.removeTickEvent("Disparo canionazo tanque jugador")
+			game.removeVisual(self)
+		}
+		
+		/*game.onCollideDo(self, { objeto =>
+			objeto.recibirDisparo() 
+			game.removeTickEvent("Disparo canionazo tanque jugador")
+			game.removeVisual(self)}
+		)*/
+	}
+	
+	method recibirDisparoEnemigo() {}
+	
+	method recibirDisparo() {}
 }
 
-object aguila {
+class CanionazoComun {
+	var property position 
+	var property direccion 
+	
+	method image() = "canionazoEnemigo.png"
+	
+	method avanzar() {
+		
+		position = direccion.mover(position)
+		
+		if(position.y() > game.height() - 1) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo comun")
+			game.removeVisual(self)
+		}
+		
+		if(position.y() < 0) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo comun")
+			game.removeVisual(self)
+		}
+		
+		if(position.x() > game.width() - 1) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo comun")
+			game.removeVisual(self)
+		}
+		
+		if(position.x() < 0) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo comun")
+			game.removeVisual(self)
+		}
+		
+		/*game.onCollideDo(self, { objeto =>
+			objeto.recibirDisparoEnemigo() 
+			game.removeTickEvent("Disparo canionazo tanque enemigo comun")
+			game.removeVisual(self)} ) */
+	}
+	
+	method recibirDisparoEnemigo() {}	
+	
+	method recibirDisparo() {}
+}
+
+class CanionazoRapido {
+	var property position 
+	var property direccion 
+	
+	method image() = "canionazoEnemigo.png"
+	
+	method avanzar() {
+		
+		position = direccion.mover(position)
+		
+		if(position.y() > game.height() - 1) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo rapido")
+			game.removeVisual(self)
+		}
+		
+		if(position.y() < 0) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo rapido")
+			game.removeVisual(self)
+		}
+		
+		if(position.x() > game.width() - 1) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo rapido")
+			game.removeVisual(self)
+		}
+		
+		if(position.x() < 0) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo rapido")
+			game.removeVisual(self)
+		}
+		
+		/*game.onCollideDo(self, { objeto =>
+			objeto.recibirDisparoEnemigo() 
+			game.removeTickEvent("Disparo canionazo tanque enemigo rapido")
+			game.removeVisual(self)} ) */
+	}
+	
+	method recibirDisparoEnemigo() {}	
+}
+
+class CanionazoResistente {
+	var property position 
+	var property direccion 
+	
+	method image() = "canionazoEnemigo.png"
+	
+	method avanzar() {
+		
+		position = direccion.mover(position)
+		
+		if(position.y() > game.height() - 1) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo resistente")
+			game.removeVisual(self)
+		}
+		
+		if(position.y() < 0) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo resistente")
+			game.removeVisual(self)
+		}
+		
+		if(position.x() > game.width() - 1) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo resistente")
+			game.removeVisual(self)
+		}
+		
+		if(position.x() < 0) {
+			game.removeTickEvent("Disparo canionazo tanque enemigo resistente")
+			game.removeVisual(self)
+		}
+		
+		/*game.onCollideDo(self, { objeto =>
+			objeto.recibirDisparoEnemigo() 
+			game.removeTickEvent("Disparo canionazo tanque enemigo resistente")
+			game.removeVisual(self)} ) */
+	}
+	
+	method recibirDisparoEnemigo() {}	
+}
+
+object baseMilitar {
 	const property position = game.at(6,0)
 	const property image = "proteger.png"
 	
-	method destruirse() { game.removeVisual(self) }
+	method destruirse() { game.removeVisual(self) nivel.gameOver() }
+	
+	method recibirDisparo() {}
+	
+	method recibirDisparoEnemigo() {
+		self.destruirse()
+	}
 }
