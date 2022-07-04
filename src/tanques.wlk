@@ -285,7 +285,12 @@ object canionazo {
 	
 	method recibirDisparoEnemigo() {}
 	
-	method recibirDisparo() {}
+	method recibirDisparo() {
+		game.onCollideDo(self, { objeto =>
+					objeto.recibirDisparoEnemigo() 
+					game.removeVisual(self)}
+			 )
+	}
 }
 
 class CanionazoComun {
@@ -326,7 +331,12 @@ class CanionazoComun {
 	
 	method recibirDisparoEnemigo() {}	
 	
-	method recibirDisparo() {}
+	method recibirDisparo() {
+		game.onCollideDo(self, { objeto =>
+					objeto.recibirDisparoEnemigo() 
+					game.removeVisual(self)}
+			 )
+	}
 }
 
 class CanionazoRapido {
@@ -365,7 +375,14 @@ class CanionazoRapido {
 			game.removeVisual(self)} ) */
 	}
 	
-	method recibirDisparoEnemigo() {}	
+	method recibirDisparoEnemigo() {}
+	
+	method recibirDisparo() {
+		game.onCollideDo(self, { objeto =>
+					objeto.recibirDisparoEnemigo() 
+					game.removeVisual(self)}
+			 )
+	}	
 }
 
 class CanionazoResistente {
@@ -404,7 +421,14 @@ class CanionazoResistente {
 			game.removeVisual(self)} ) */
 	}
 	
-	method recibirDisparoEnemigo() {}	
+	method recibirDisparoEnemigo() {}
+	
+	method recibirDisparo() {
+		game.onCollideDo(self, { objeto =>
+					objeto.recibirDisparoEnemigo() 
+					game.removeVisual(self)}
+			 )
+	}	
 }
 
 object baseMilitar {

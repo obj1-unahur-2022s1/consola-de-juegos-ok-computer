@@ -39,7 +39,7 @@ object nivel {
 		keyboard.s().onPressDo({tanqueJugador.disparar()})
 		keyboard.x().onPressDo{game.stop()}
 		keyboard.any().onPressDo{self.ganaste()}
-		game.onTick(1200, "Mover tanques enemigos", { self.moverTanquesEnemigos() })
+		game.onTick(1300, "Mover tanques enemigos", { self.moverTanquesEnemigos() })
 		game.onTick(1000, "Mover tanque enemigo rapido", { self.moverTanqueEnemigoRapido() })
 		game.onTick(6000, "disparo Enemigo Resistente", { tanqueEnemigoResistente.disparar() })
 		game.onTick(4000, "disparo Enemigo Comun", { tanqueEnemigoComun.disparar() })
