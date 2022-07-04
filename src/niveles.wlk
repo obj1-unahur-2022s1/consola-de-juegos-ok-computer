@@ -10,7 +10,6 @@ object nivel {
 	const tanqueEnemigoComun = new TanqueEnemigoComun(position = game.at(6,12))
 	const tanqueEnemigoRapido = new TanqueEnemigoRapido(position = game.at(0,12))
 	const tanqueEnemigoResistente = new TanqueEnemigoResistente(position = game.at(12,12))
-	//const tanques = [tanqueEnemigoComun,tanqueEnemigoResistente]
 	
 	method iniciar() {
 		
@@ -40,11 +39,11 @@ object nivel {
 		keyboard.s().onPressDo({tanqueJugador.disparar()})
 		keyboard.x().onPressDo{game.stop()}
 		keyboard.any().onPressDo{self.ganaste()}
-		game.onTick(700, "Mover tanques enemigos", { self.moverTanquesEnemigos() })
-		game.onTick(300, "Mover tanque enemigo rapido", { self.moverTanqueEnemigoRapido() })
-		game.onTick(4000, "disparo Enemigo Resistente", { tanqueEnemigoResistente.disparar() })
-		game.onTick(2000, "disparo Enemigo Comun", { tanqueEnemigoComun.disparar() })
-		game.onTick(900, "disparo Enemigo Rapido", { tanqueEnemigoRapido.disparar() })
+		game.onTick(1200, "Mover tanques enemigos", { self.moverTanquesEnemigos() })
+		game.onTick(1000, "Mover tanque enemigo rapido", { self.moverTanqueEnemigoRapido() })
+		game.onTick(6000, "disparo Enemigo Resistente", { tanqueEnemigoResistente.disparar() })
+		game.onTick(4000, "disparo Enemigo Comun", { tanqueEnemigoComun.disparar() })
+		game.onTick(2000, "disparo Enemigo Rapido", { tanqueEnemigoRapido.disparar() })
 		
 		/*self.canionazoChocandoContra(tanqueEnemigoComun)
 		self.canionazoChocandoContra(tanqueEnemigoRapido)
@@ -98,7 +97,6 @@ object nivel {
 	}
 	
 	method moverTanquesEnemigos() {
-		//tanques.forEach { t => t.moverse() }
 		tanqueEnemigoComun.moverse()
 		tanqueEnemigoResistente.moverse()
 	}
