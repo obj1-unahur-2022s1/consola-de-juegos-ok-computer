@@ -24,10 +24,11 @@ object battleCity {
 	var property position
 	
 	method iniciar(){
-       game.schedule(1000,{ nivel.iniciar() })	
+		nivel.iniciar()	
 	}
+	
 	method terminar(){
 		
 	}
-	method image() = "proteger.png"
+	method image() = "baseMilitar.png"
 }

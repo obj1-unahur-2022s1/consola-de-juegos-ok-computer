@@ -10,7 +10,7 @@ import direcciones.*
 
 object tanqueJugador {
 	var property direccion = arriba
-	var property position = game.at(4,0)
+	var property position = self.posicionInicial()
 
 	method image() = direccion.toString() + "Jugador.png"
 	
@@ -82,27 +82,25 @@ object tanqueJugador {
 	
 	method sonidoPorMovimiento(){
 		const mov = game.sound("tanqueJugadorMovimiento.mp3")
-		mov.volume(0.1)
-		mov.play()
+		if(not mov.played()) {
+			mov.volume(0.1)
+			mov.play() }
 	}
 	
 	method sonidoDisparo() {
 		const disparo = game.sound("disparoTanqueJugador.mp3")
-		disparo.volume(0.1)
-		disparo.play()
+		if(not disparo.played()) {
+			disparo.volume(0.1)
+			disparo.play() }
 	}
 	
-	/*method sonidoMuerte() { 
-		const muerte = game.sound("tanqueJugadorMuere.mp3")
-		muerte.volume(0.1)
-		muerte.play()
-	}
-	/// Lo saqué porque queda mejor el sonido del game over directamente.
-	*/ 
+	method reiniciarPosicion() { position = self.posicionInicial() }
+	
+	method posicionInicial() = game.at(4,0)
 }
 
 class TanquesEnemigos {
-	var property position
+	var property position = self.posicionInicial()
 	var property direccion = abajo
 	
 	method direccionesPosibles() {
@@ -155,9 +153,14 @@ class TanquesEnemigos {
 	
 	method sonidoMuerteEnemigo() {
 		const muerte = game.sound("muerteTanqueEnemigo.mp3")
-		muerte.volume(0.1)
-		muerte.play()
+		if(not muerte.played()) {
+			muerte.volume(0.1)
+			muerte.play() }
 	}
+	
+	method reiniciarPosicion() { position = self.posicionInicial() }
+	
+	method posicionInicial()
 }
 
 class TanqueEnemigoComun inherits TanquesEnemigos{
@@ -180,9 +183,10 @@ class TanqueEnemigoComun inherits TanquesEnemigos{
 					game.removeVisual(canionazoEnemigo)}
 			} )
 		}
-		
-		
 	}
+		
+	override method posicionInicial() = game.at(6,12)
+	
 }
 
 class TanqueEnemigoRapido inherits TanquesEnemigos {
@@ -204,10 +208,10 @@ class TanqueEnemigoRapido inherits TanquesEnemigos {
 					game.removeTickEvent("Disparo canionazo tanque enemigo rapido")
 					game.removeVisual(canionazoEnemigo) }
 			} )
-		}
-		
-		
+		}	
 	}
+	
+	override method posicionInicial() = game.at(0,12)
 }
 
 class TanqueEnemigoResistente inherits TanquesEnemigos {
@@ -218,12 +222,14 @@ class TanqueEnemigoResistente inherits TanquesEnemigos {
 	
 	override method destruirse() { 
 		salud = 0.max(salud - 1)
-		game.say(self,"me queda " + salud + " de vida")
+		game.say(self,"Me queda " + salud.toString() + " de vida")
 		if(salud == 0) {
 			game.removeVisual(self)
 			self.sonidoMuerteEnemigo()
 		}
 	}
+	
+	method reiniciarSalud() { salud = 3}
 	
 	override method disparar() {
 		const canionazoEnemigo = new CanionazoResistente(position = self.position(), direccion=self.direccion())
@@ -241,9 +247,9 @@ class TanqueEnemigoResistente inherits TanquesEnemigos {
 					game.removeVisual(canionazoEnemigo)}
 			} )
 		}
-		
-		
 	}
+	
+	override method posicionInicial() = game.at(12,12)
 }
 /// CAÑONAZOS ///
 object canionazo {
@@ -428,12 +434,12 @@ class CanionazoResistente {
 					objeto.recibirDisparoEnemigo() 
 					game.removeVisual(self)}
 			 )
-	}	
+	}
 }
 
 object baseMilitar {
 	const property position = game.at(6,0)
-	const property image = "proteger.png"
+	const property image = "baseMilitar.png"
 	
 	method destruirse() { game.removeVisual(self) nivel.gameOver() }
 	

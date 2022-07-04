@@ -17,7 +17,6 @@ object consola {
 		game.height(13)
 		game.width(13)
 		game.title("Consola de juegos")
-		game.ground("fondo.png")
 	}
 	
 	method iniciar(){

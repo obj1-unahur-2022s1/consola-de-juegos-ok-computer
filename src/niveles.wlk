@@ -2,6 +2,8 @@ import wollok.game.*
 import tanques.*
 import direcciones.*
 import juego.*
+import consola.*
+import juego.*
 
 object nivel {
 	const posLadrillos = []
@@ -10,6 +12,7 @@ object nivel {
 	const tanqueEnemigoComun = new TanqueEnemigoComun(position = game.at(6,12))
 	const tanqueEnemigoRapido = new TanqueEnemigoRapido(position = game.at(0,12))
 	const tanqueEnemigoResistente = new TanqueEnemigoResistente(position = game.at(12,12))
+	const tanquesEnEscenario = [tanqueJugador,tanqueEnemigoComun,tanqueEnemigoRapido,tanqueEnemigoResistente]
 	
 	method iniciar() {
 		
@@ -17,39 +20,39 @@ object nivel {
 		game.title("Battle City")
 		game.height(13)
 		game.width(13)
-		game.ground("fondo.png")
 		game.addVisual(pantPrincipal)
-		game.schedule( 100, { => soundPantPrincipal.iniciar() } )
-		keyboard.enter().onPressDo({self.cargarEscenario()})
-		game.start()
+		soundPantPrincipal.iniciar()
+		keyboard.enter().onPressDo({ soundPantPrincipal.detener() self.cargarEscenario()})
+		
 	}
 	method cargarEscenario() {
 		
-		game.removeVisual(pantPrincipal)
+		game.clear()
+		game.title("Battle City")
+		game.height(13)
+		game.width(13)
+		game.ground("fondo.png")
+		
+		/// Añadir visuales al escenario
 		self.dibujarEscenario()
 		game.addVisual(baseMilitar)
 		game.addVisual(tanqueEnemigoComun)
 		game.addVisual(tanqueEnemigoRapido)
 		game.addVisual(tanqueEnemigoResistente)
 		game.addVisual(tanqueJugador)
-		keyboard.up().onPressDo({tanqueJugador.moverseArriba()})
-		keyboard.right().onPressDo({tanqueJugador.moverseDerecha()})
-		keyboard.left().onPressDo({tanqueJugador.moverseIzquierda()})
-		keyboard.down().onPressDo({tanqueJugador.moverseAbajo()})
-		keyboard.s().onPressDo({tanqueJugador.disparar()})
-		keyboard.x().onPressDo{game.stop()}
-		keyboard.any().onPressDo{self.ganaste()}
+		tanquesEnEscenario.forEach({ t => t.reiniciarPosicion() })
+		tanqueEnemigoResistente.reiniciarSalud()
+		
+		self.configuracionDeTeclas()
+		
+		/// Movimientos y disparos de tanques enemigos
 		game.onTick(1300, "Mover tanques enemigos", { self.moverTanquesEnemigos() })
 		game.onTick(1000, "Mover tanque enemigo rapido", { self.moverTanqueEnemigoRapido() })
 		game.onTick(6000, "disparo Enemigo Resistente", { tanqueEnemigoResistente.disparar() })
 		game.onTick(4000, "disparo Enemigo Comun", { tanqueEnemigoComun.disparar() })
 		game.onTick(2000, "disparo Enemigo Rapido", { tanqueEnemigoRapido.disparar() })
 		
-		/*self.canionazoChocandoContra(tanqueEnemigoComun)
-		self.canionazoChocandoContra(tanqueEnemigoRapido)
-		self.canionazoChocandoContra(tanqueEnemigoResistente)*/
 	}
-		
 	
 	method dibujarEscenario() {
 		
@@ -96,6 +99,16 @@ object nivel {
 		return imagen
 	}
 	
+	method configuracionDeTeclas() {
+		keyboard.up().onPressDo({tanqueJugador.moverseArriba()})
+		keyboard.right().onPressDo({tanqueJugador.moverseDerecha()})
+		keyboard.left().onPressDo({tanqueJugador.moverseIzquierda()})
+		keyboard.down().onPressDo({tanqueJugador.moverseAbajo()})
+		keyboard.s().onPressDo({tanqueJugador.disparar()})
+		keyboard.x().onPressDo{game.stop()}
+		keyboard.any().onPressDo{self.ganaste()}
+	}
+	
 	method moverTanquesEnemigos() {
 		tanqueEnemigoComun.moverse()
 		tanqueEnemigoResistente.moverse()
@@ -122,9 +135,10 @@ object nivel {
 			game.width(13)
 			game.height(13)
 			soundGanaste.iniciar()
-			keyboard.space().onPressDo{ self.iniciar() }
-			keyboard.x().onPressDo{game.stop()}
 			game.addVisual(pantGanador)
+			keyboard.space().onPressDo{ battleCity.iniciar() }
+			keyboard.x().onPressDo{game.stop()}
+			
 		}
 	}
 	
@@ -134,9 +148,9 @@ object nivel {
 		game.width(13)
 		game.height(13)
         soundGameOver.iniciar()
-		keyboard.space().onPressDo{ self.iniciar() }
+        game.addVisual(gameOver)
+		keyboard.space().onPressDo{ battleCity.iniciar() }
 		keyboard.x().onPressDo{game.stop()}
-		game.addVisual(gameOver)
 	}
 	
 	
@@ -209,8 +223,15 @@ object soundPantPrincipal {
 	const sound = game.sound("sonidoPantPrincipal.mp3")
 	
 	method iniciar() {
-		sound.play()
-		sound.volume(0.1)
+		if(not sound.played()) {
+			sound.play()
+			sound.shouldLoop()
+			sound.volume(0.1)
+		}
+	}
+	
+	method detener() {
+		sound.stop()
 	}
 }
 
@@ -218,9 +239,15 @@ object soundGanaste {
 	const sound = game.sound("winning.mp3")
 	
 	method iniciar() {
-		sound.play()
-		sound.shouldLoop()
-		sound.volume(0.1)
+		if(not sound.played()) {
+			sound.play()
+			sound.shouldLoop()
+			sound.volume(0.1)
+		}
+	}
+	
+	method detener() {
+		sound.stop()
 	}
 }
 
@@ -228,7 +255,14 @@ object soundGameOver {
 	const sound = game.sound("gameOver.mp3")
 	
 	method iniciar() {
-		sound.play()
-		sound.volume(0.1)
+		if(not sound.played()) {
+			sound.play()
+			sound.shouldLoop()
+			sound.volume(0.1)
+		}
+	}
+	
+	method detener() {
+		sound.stop()
 	}
 }
