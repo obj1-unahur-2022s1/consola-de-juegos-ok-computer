@@ -40,6 +40,7 @@ object nivel {
 		game.addVisual(tanqueEnemigoRapido)
 		game.addVisual(tanqueEnemigoResistente)
 		game.addVisual(tanqueJugador)
+		soundPantPrincipal.detener()
 		tanquesEnEscenario.forEach({ t => t.reiniciarPosicion() })
 		tanqueEnemigoResistente.reiniciarSalud()
 		
@@ -105,7 +106,7 @@ object nivel {
 		keyboard.left().onPressDo({tanqueJugador.moverseIzquierda()})
 		keyboard.down().onPressDo({tanqueJugador.moverseAbajo()})
 		keyboard.s().onPressDo({tanqueJugador.disparar()})
-		keyboard.x().onPressDo{game.stop()}
+		keyboard.x().onPressDo{ consola.initialize() } // REVISAR PORQUÉ NO VUELVE A LA CONSOLA
 		keyboard.any().onPressDo{self.ganaste()}
 	}
 	
@@ -137,7 +138,7 @@ object nivel {
 			soundGanaste.iniciar()
 			game.addVisual(pantGanador)
 			keyboard.space().onPressDo{ battleCity.iniciar() }
-			keyboard.x().onPressDo{game.stop()}
+			keyboard.x().onPressDo{game.clear() consola.iniciar()}
 			
 		}
 	}
@@ -150,7 +151,7 @@ object nivel {
         soundGameOver.iniciar()
         game.addVisual(gameOver)
 		keyboard.space().onPressDo{ battleCity.iniciar() }
-		keyboard.x().onPressDo{game.stop()}
+		keyboard.x().onPressDo{game.clear() consola.iniciar()}
 	}
 	
 	
@@ -225,13 +226,13 @@ object soundPantPrincipal {
 	method iniciar() {
 		if(not sound.played()) {
 			sound.play()
-			sound.shouldLoop()
+			sound.shouldLoop(true)
 			sound.volume(0.1)
 		}
 	}
 	
 	method detener() {
-		sound.stop()
+		sound.volume(0)
 	}
 }
 
@@ -247,7 +248,7 @@ object soundGanaste {
 	}
 	
 	method detener() {
-		sound.stop()
+		sound.volume(0)
 	}
 }
 
@@ -263,6 +264,6 @@ object soundGameOver {
 	}
 	
 	method detener() {
-		sound.stop()
+		sound.volume(0)
 	}
 }
